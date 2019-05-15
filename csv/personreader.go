@@ -99,7 +99,6 @@ func createCsvPerson(line []string, headers []string) (person, error) {
 		OptIn:      line[5],
 	}
 
-	// Instantiate so JSON won't be null for the list
 	matches := []match{}
 
 	matchValues := line[MatchesStartingIndex:]
