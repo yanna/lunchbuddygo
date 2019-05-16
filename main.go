@@ -5,9 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"lunchbuddy/csv"
-
-	"github.com/pkg/errors"
+	"lunchbuddy/matching"
 )
 
 func main() {
@@ -20,16 +18,38 @@ func main() {
 	}
 
 	fmt.Println("Csv", *buddyCsvFilePath)
+	/*
+		personReader := csv.NewPersonReader(*buddyCsvFilePath)
+		peopleMatches, dataError := personReader.GetData()
 
-	personReader := csv.NewPersonReader(*buddyCsvFilePath)
-	peopleMatches, dataError := personReader.GetData()
+		if dataError != nil {
+			fmt.Printf("Error getting data:\n%+v\n", errors.Cause(dataError))
+			return
+		}
 
-	if dataError != nil {
-		fmt.Printf("Error:\n%+v\n", errors.Cause(dataError))
+		// Be care: json.Marshal() will return null for var myslice []int and [] for initialized slice myslice := []int{}
+		peopleJSON, _ := json.MarshalIndent(*peopleMatches, "", " ")
+		fmt.Println(string(peopleJSON))
+	*/
+	males := make(map[string][]string)
+	males["0"] = []string{"7", "5", "6", "4"}
+	males["1"] = []string{"5", "4", "6", "7"}
+	males["2"] = []string{"4", "5", "6", "7"}
+	males["3"] = []string{"4", "5", "6", "7"}
+
+	females := make(map[string][]string)
+	females["4"] = []string{"0", "1", "2", "3"}
+	females["5"] = []string{"0", "1", "2", "3"}
+	females["6"] = []string{"0", "1", "2", "3"}
+	females["7"] = []string{"0", "1", "2", "3"}
+
+	stableMarriage, error := matching.NewStableMarriage(females, males)
+	if error != nil {
+		fmt.Printf("Error getting data:\n%+v\n", error)
 		return
 	}
 
-	// Be care: json.Marshal() will return null for var myslice []int and [] for initialized slice myslice := []int{}
-	peopleJSON, _ := json.MarshalIndent(*peopleMatches, "", " ")
-	fmt.Println(string(peopleJSON))
+	matches := stableMarriage.CreateStablePairs()
+	matchesJSON, _ := json.MarshalIndent(matches, "", " ")
+	fmt.Println(string(matchesJSON))
 }
