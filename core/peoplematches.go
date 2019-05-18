@@ -58,8 +58,6 @@ func (pm *PeopleMatches) sortInOrderOfPreference(personID int, personIDsToSort [
 		}
 	}
 
-	//fmt.Println(personScores)
-
 	// Sort based on rank. highest first.
 	sort.Slice(personScores, func(i, j int) bool {
 		return personScores[i].score > personScores[j].score

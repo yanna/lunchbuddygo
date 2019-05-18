@@ -31,8 +31,8 @@ func NewPerson(personID int, fullName string, alias string, team string, discipl
 func (p *Person) GetScore(personScoreIsFor *Person) int {
 	// Most important differences
 	// 1. Gender
-	// 2. Seniority
-	// 3. Discipline
+	// 2. Discipline
+	// 3. Seniority
 	// 4. Team
 	// Higher score is better
 	score := 0
@@ -41,11 +41,11 @@ func (p *Person) GetScore(personScoreIsFor *Person) int {
 		score += 10
 	}
 
-	if personScoreIsFor.Seniority != p.Seniority {
+	if personScoreIsFor.Discipline != p.Discipline {
 		score += 8
 	}
 
-	if personScoreIsFor.Discipline != p.Discipline {
+	if personScoreIsFor.Seniority != p.Seniority {
 		score += 4
 	}
 
