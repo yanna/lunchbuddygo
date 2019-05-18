@@ -12,7 +12,7 @@ func createPeople(csvPeople []person) *core.People {
 		people = append(people, *newPerson)
 	}
 
-	return &core.People{Data: people}
+	return core.NewPeople(people)
 }
 
 func createPerson(csvPerson *person) *core.Person {

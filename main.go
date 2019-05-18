@@ -26,15 +26,18 @@ func main() {
 
 	personReader := csv.NewPersonReader(*buddyCsvFilePath)
 	peopleMatches, err := personReader.GetData()
-
 	printErrorAndExit(err)
 
 	if *verbose {
-		peopleJSON, _ := json.MarshalIndent(*peopleMatches, "", " ")
-		fmt.Println(string(peopleJSON))
+		print("People matches:", *peopleMatches)
 	}
 
 	group1, group2, oddPerson := peopleMatches.GetPreferences()
+	if *verbose {
+		print("Group1:", group1)
+		print("Group2:", group2)
+	}
+
 	stableMarriage, err := matching.NewStableMarriage(group1, group2)
 	printErrorAndExit(err)
 
@@ -43,6 +46,7 @@ func main() {
 	if oddPerson != nil {
 		fmt.Println(fmt.Sprintf("Odd Person: %s", oddPerson.Alias))
 	}
+	
 	matchesJSON, _ := json.MarshalIndent(matches, "", " ")
 	fmt.Println(string(matchesJSON))
 }
@@ -53,4 +57,9 @@ func printErrorAndExit(err error) {
 		fmt.Printf("Stack trace:\n%+v\n", err)
 		os.Exit(1)
 	}
+}
+
+func print(preText string, data interface{}) {
+	dataJSON, _ := json.MarshalIndent(data, "", " ")
+	fmt.Println(preText + "\n" + string(dataJSON))
 }

@@ -8,12 +8,22 @@ import (
 
 // People groups Person objects
 type People struct {
-	Data []Person `json:"people"`
+	idToPerson map[int]Person
+}
+
+func NewPeople(people []Person) *People {
+	idToPerson := make(map[int]Person)
+	for _, person := range people {
+		idToPerson[person.ID] = person
+	}
+	return &People{
+		idToPerson: idToPerson,
+	}
 }
 
 // GetPersonIDByAlias returns the id of the person
 func (m *People) GetPersonIDByAlias(alias string) (int, error) {
-	for _, person := range m.Data {
+	for _, person := range m.idToPerson {
 		if person.Alias == alias {
 			return person.ID, nil
 		}
@@ -25,7 +35,7 @@ func (m *People) GetPersonIDByAlias(alias string) (int, error) {
 // GetOptedIn returns all the people who are opted in at the moment
 func (m *People) GetOptedIn() []Person {
 	var optedIn []Person
-	for _, person := range m.Data {
+	for _, person := range m.idToPerson {
 		if person.OptIn {
 			optedIn = append(optedIn, person)
 		}
@@ -59,10 +69,9 @@ func (m *People) SplitOptedInPeopleIntoTwoGroups() (group1 []Person, group2 []Pe
 // GetAliases returns the aliases representing the ids
 func (m *People) GetAliases(personIDs []int) []string {
 	var result []string
-	for _, person := range m.Data {
-		if isIntInSlice(person.ID, personIDs) {
-			result = append(result, person.Alias)
-		}
+	for _, personID := range personIDs {
+		person := m.idToPerson[personID]
+		result = append(result, person.Alias)
 	}
 	return result
 }
