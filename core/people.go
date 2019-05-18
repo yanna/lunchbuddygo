@@ -11,6 +11,7 @@ type People struct {
 	idToPerson map[int]Person
 }
 
+// NewPeople creates a new People object
 func NewPeople(people []Person) *People {
 	idToPerson := make(map[int]Person)
 	for _, person := range people {
@@ -19,6 +20,11 @@ func NewPeople(people []Person) *People {
 	return &People{
 		idToPerson: idToPerson,
 	}
+}
+
+// GetPerson returns a person based on the id
+func (m *People) GetPerson(personID int) Person {
+	return m.idToPerson[personID]
 }
 
 // GetPersonIDByAlias returns the id of the person
@@ -66,7 +72,7 @@ func (m *People) SplitOptedInPeopleIntoTwoGroups() (group1 []Person, group2 []Pe
 	return
 }
 
-// GetAliases returns the aliases representing the ids
+// GetAliases returns the aliases representing the ids in the order of the ids
 func (m *People) GetAliases(personIDs []int) []string {
 	var result []string
 	for _, personID := range personIDs {

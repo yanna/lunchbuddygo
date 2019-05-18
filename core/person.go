@@ -26,3 +26,32 @@ func NewPerson(personID int, fullName string, alias string, team string, discipl
 		OptIn:      optIn,
 	}
 }
+
+// GetScore returns the score of the current person with relation to the input person
+func (p *Person) GetScore(personScoreIsFor *Person) int {
+	// Most important differences
+	// 1. Gender
+	// 2. Seniority
+	// 3. Discipline
+	// 4. Team
+	// Higher score is better
+	score := 0
+
+	if personScoreIsFor.Gender != p.Gender {
+		score += 10
+	}
+
+	if personScoreIsFor.Seniority != p.Seniority {
+		score += 8
+	}
+
+	if personScoreIsFor.Discipline != p.Discipline {
+		score += 4
+	}
+
+	if personScoreIsFor.Team != p.Team {
+		score += 2
+	}
+
+	return score
+}

@@ -15,14 +15,12 @@ import (
 func main() {
 
 	buddyCsvFilePath := flag.String("csv", "", "Location of the Lunch Buddy csv file")
-	verbose := flag.Bool("verbose", true, "Lots of logging")
+	verbose := flag.Bool("verbose", false, "Lots of logging")
 	flag.Parse()
 
 	if *buddyCsvFilePath == "" {
 		log.Fatalln("csv flag is required.")
 	}
-
-	fmt.Println("Csv", *buddyCsvFilePath)
 
 	personReader := csv.NewPersonReader(*buddyCsvFilePath)
 	peopleMatches, err := personReader.GetData()
@@ -46,7 +44,7 @@ func main() {
 	if oddPerson != nil {
 		fmt.Println(fmt.Sprintf("Odd Person: %s", oddPerson.Alias))
 	}
-	
+
 	matchesJSON, _ := json.MarshalIndent(matches, "", " ")
 	fmt.Println(string(matchesJSON))
 }
