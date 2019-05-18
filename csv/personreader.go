@@ -82,21 +82,29 @@ func convertPersonID(personIDStr string) (int, error) {
 }
 
 func createCsvPerson(line []string, headers []string) (person, error) {
+
 	//todo: don't hardcode the headers
 	personID, error := convertPersonID(line[0])
 	if error != nil {
 		return person{}, error
 	}
+
+	optedIn, error := strconv.ParseBool(line[7])
+	if error != nil {
+		return person{}, error
+	}
 	// Expectation is that we have these fixed headers, then the rest will be columns of matches
 	// The header has the date in the format yyyymm and the cell value is the alias
-	const MatchesStartingIndex = 6
+	const MatchesStartingIndex = 8
 	person := person{
 		ID:         personID,
 		FullName:   line[1],
 		Alias:      line[2],
 		Team:       line[3],
 		Discipline: line[4],
-		OptIn:      line[5],
+		Seniority:  line[5],
+		Gender:     line[6],
+		OptIn:      optedIn,
 	}
 
 	matches := []match{}

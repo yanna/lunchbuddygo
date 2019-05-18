@@ -6,11 +6,8 @@ type person struct {
 	Alias       string  `json:"alias"`
 	Team        string  `json:"team"`
 	Discipline  string  `json:"discipline"`
-	OptIn       string  `json:"optin"`
+	Seniority   string  `json:"seniority"`
+	Gender      string  `json:"gender"`
+	OptIn       bool    `json:"optin"`
 	PastMatches []match `json:"past_matches"`
-}
-
-type match struct {
-	Date  string `json:"date"`
-	Alias string `json:"alias"`
 }

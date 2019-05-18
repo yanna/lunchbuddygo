@@ -5,12 +5,17 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"lunchbuddy/csv"
 	"lunchbuddy/matching"
+	"os"
+
+	"github.com/pkg/errors"
 )
 
 func main() {
 
 	buddyCsvFilePath := flag.String("csv", "", "Location of the Lunch Buddy csv file")
+	verbose := flag.Bool("verbose", true, "Lots of logging")
 	flag.Parse()
 
 	if *buddyCsvFilePath == "" {
@@ -18,38 +23,34 @@ func main() {
 	}
 
 	fmt.Println("Csv", *buddyCsvFilePath)
-	/*
-		personReader := csv.NewPersonReader(*buddyCsvFilePath)
-		peopleMatches, dataError := personReader.GetData()
 
-		if dataError != nil {
-			fmt.Printf("Error getting data:\n%+v\n", errors.Cause(dataError))
-			return
-		}
+	personReader := csv.NewPersonReader(*buddyCsvFilePath)
+	peopleMatches, err := personReader.GetData()
 
-		// Be care: json.Marshal() will return null for var myslice []int and [] for initialized slice myslice := []int{}
+	printErrorAndExit(err)
+
+	if *verbose {
 		peopleJSON, _ := json.MarshalIndent(*peopleMatches, "", " ")
 		fmt.Println(string(peopleJSON))
-	*/
-	males := make(map[string][]string)
-	males["0"] = []string{"7", "5", "6", "4"}
-	males["1"] = []string{"5", "4", "6", "7"}
-	males["2"] = []string{"4", "5", "6", "7"}
-	males["3"] = []string{"4", "5", "6", "7"}
-
-	females := make(map[string][]string)
-	females["4"] = []string{"0", "1", "2", "3"}
-	females["5"] = []string{"0", "1", "2", "3"}
-	females["6"] = []string{"0", "1", "2", "3"}
-	females["7"] = []string{"0", "1", "2", "3"}
-
-	stableMarriage, error := matching.NewStableMarriage(females, males)
-	if error != nil {
-		fmt.Printf("Error getting data:\n%+v\n", error)
-		return
 	}
 
+	group1, group2, oddPerson := peopleMatches.GetPreferences()
+	stableMarriage, err := matching.NewStableMarriage(group1, group2)
+	printErrorAndExit(err)
+
 	matches := stableMarriage.CreateStablePairs()
+
+	if oddPerson != nil {
+		fmt.Println(fmt.Sprintf("Odd Person: %s", oddPerson.Alias))
+	}
 	matchesJSON, _ := json.MarshalIndent(matches, "", " ")
 	fmt.Println(string(matchesJSON))
+}
+
+func printErrorAndExit(err error) {
+	if err != nil {
+		fmt.Printf("Error: %T %v\n", errors.Cause(err), errors.Cause(err))
+		fmt.Printf("Stack trace:\n%+v\n", err)
+		os.Exit(1)
+	}
 }

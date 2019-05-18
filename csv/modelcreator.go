@@ -22,6 +22,8 @@ func createPerson(csvPerson *person) *core.Person {
 		csvPerson.Alias,
 		csvPerson.Team,
 		csvPerson.Discipline,
+		csvPerson.Seniority,
+		csvPerson.Gender,
 		csvPerson.OptIn)
 	return output
 }
