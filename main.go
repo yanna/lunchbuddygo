@@ -7,7 +7,9 @@ import (
 	"log"
 	"lunchbuddy/csv"
 	"lunchbuddy/matching"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/pkg/errors"
 )
@@ -21,6 +23,8 @@ func main() {
 	if *buddyCsvFilePath == "" {
 		log.Fatalln("csv flag is required.")
 	}
+
+	rand.Seed(time.Now().UnixNano())
 
 	personReader := csv.NewPersonReader(*buddyCsvFilePath)
 	peopleMatches, err := personReader.GetData()

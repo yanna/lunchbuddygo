@@ -14,7 +14,7 @@ type PeopleMatches struct {
 //returns their preferences of the other group.
 //If there is an odd number of people, an odd person may also be returned
 func (pm *PeopleMatches) GetPreferences() (group1Prefs map[string][]string, group2Prefs map[string][]string, oddPerson *Person) {
-	group1, group2, oddPerson := pm.SplitOptedInPeopleIntoTwoGroups()
+	group1, group2, oddPerson := pm.SplitActivePeopleIntoTwoRandomGroups()
 	group1Prefs = pm.getPreferencesForFirstGroup(group1, group2)
 	group2Prefs = pm.getPreferencesForFirstGroup(group2, group1)
 	return

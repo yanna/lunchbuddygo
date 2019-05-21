@@ -3,7 +3,6 @@ package core
 import (
 	"errors"
 	"math/rand"
-	"time"
 )
 
 // People groups Person objects
@@ -49,12 +48,11 @@ func (m *People) GetActivePeople() []Person {
 	return activeUsers
 }
 
-//SplitOptedInPeopleIntoTwoGroups separates the opted in people into two groups randomly.
+//SplitActivePeopleIntoTwoRandomGroups separates the opted in people into two groups randomly.
 //It is possible to have an odd person
-func (m *People) SplitOptedInPeopleIntoTwoGroups() (group1 []Person, group2 []Person, oddPerson *Person) {
+func (m *People) SplitActivePeopleIntoTwoRandomGroups() (group1 []Person, group2 []Person, oddPerson *Person) {
 	activePeople := m.GetActivePeople()
 
-	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(
 		len(activePeople),
 		func(i, j int) {
