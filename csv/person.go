@@ -8,6 +8,6 @@ type person struct {
 	Discipline  string  `json:"discipline"`
 	Seniority   string  `json:"seniority"`
 	Gender      string  `json:"gender"`
-	OptIn       bool    `json:"optin"`
+	Active      bool    `json:"active"`
 	PastMatches []match `json:"past_matches"`
 }

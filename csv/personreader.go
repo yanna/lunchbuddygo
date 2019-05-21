@@ -89,7 +89,7 @@ func createCsvPerson(line []string, headers []string) (person, error) {
 		return person{}, error
 	}
 
-	optedIn, error := strconv.ParseBool(line[7])
+	isActive, error := strconv.ParseBool(line[7])
 	if error != nil {
 		return person{}, error
 	}
@@ -104,7 +104,7 @@ func createCsvPerson(line []string, headers []string) (person, error) {
 		Discipline: line[4],
 		Seniority:  line[5],
 		Gender:     line[6],
-		OptIn:      optedIn,
+		Active:     isActive,
 	}
 
 	matches := []match{}

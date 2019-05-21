@@ -9,11 +9,11 @@ type Person struct {
 	Discipline string `json:"discipline"`
 	Seniority  string `json:"seniority"`
 	Gender     string `json:"gender"`
-	OptIn      bool   `json:"optin"`
+	Active     bool   `json:"active"`
 }
 
 // NewPerson constructs a Person
-func NewPerson(personID int, fullName string, alias string, team string, discipline string, seniority string, gender string, optIn bool) *Person {
+func NewPerson(personID int, fullName string, alias string, team string, discipline string, seniority string, gender string, active bool) *Person {
 
 	return &Person{
 		ID:         personID,
@@ -23,7 +23,7 @@ func NewPerson(personID int, fullName string, alias string, team string, discipl
 		Discipline: discipline,
 		Seniority:  seniority,
 		Gender:     gender,
-		OptIn:      optIn,
+		Active:     active,
 	}
 }
 

@@ -11,5 +11,5 @@ const (
 	Discipline
 	Seniority
 	Gender
-	OptIn
+	Active
 )

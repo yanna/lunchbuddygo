@@ -38,36 +38,36 @@ func (m *People) GetPersonIDByAlias(alias string) (int, error) {
 	return -1, errors.New("Can't find person with alias " + alias)
 }
 
-// GetOptedIn returns all the people who are opted in at the moment
-func (m *People) GetOptedIn() []Person {
-	var optedIn []Person
+// GetActivePeople returns all the people who are actively available for matching
+func (m *People) GetActivePeople() []Person {
+	var activeUsers []Person
 	for _, person := range m.idToPerson {
-		if person.OptIn {
-			optedIn = append(optedIn, person)
+		if person.Active {
+			activeUsers = append(activeUsers, person)
 		}
 	}
-	return optedIn
+	return activeUsers
 }
 
 //SplitOptedInPeopleIntoTwoGroups separates the opted in people into two groups randomly.
 //It is possible to have an odd person
 func (m *People) SplitOptedInPeopleIntoTwoGroups() (group1 []Person, group2 []Person, oddPerson *Person) {
-	optedInPeople := m.GetOptedIn()
+	activePeople := m.GetActivePeople()
 
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(
-		len(optedInPeople),
+		len(activePeople),
 		func(i, j int) {
-			optedInPeople[i], optedInPeople[j] = optedInPeople[j], optedInPeople[i]
+			activePeople[i], activePeople[j] = activePeople[j], activePeople[i]
 		})
 
-	peopleLength := len(optedInPeople)
+	peopleLength := len(activePeople)
 	midIndex := peopleLength / 2
-	group1 = optedInPeople[:midIndex]
-	group2 = optedInPeople[midIndex : midIndex*2]
+	group1 = activePeople[:midIndex]
+	group2 = activePeople[midIndex : midIndex*2]
 	oddPerson = nil
 	if peopleLength%2 != 0 {
-		oddPerson = &optedInPeople[len(optedInPeople)-1]
+		oddPerson = &activePeople[len(activePeople)-1]
 	}
 	return
 }
