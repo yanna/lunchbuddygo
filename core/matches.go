@@ -31,3 +31,18 @@ func (m *Matches) SortMatchesByDate(personID int, matchedPersonIDs []int) []int 
 	}
 	return sortedPersonIDs
 }
+
+// HaveBeenMatched returns true if personID1 have ever been matched with personID2
+func (m *Matches) HaveBeenMatched(personID1 int, personID2 int) bool {
+	allMatches := m.GetAllMatchesByPersonID(personID1)
+
+	haveBeenMatched := false
+	for _, match := range allMatches {
+		if personID2 == match.PersonID {
+			haveBeenMatched = true
+			break
+		}
+	}
+
+	return haveBeenMatched
+}

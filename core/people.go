@@ -3,6 +3,7 @@ package core
 import (
 	"errors"
 	"math/rand"
+	"sort"
 )
 
 // People groups Person objects
@@ -22,13 +23,13 @@ func NewPeople(people []Person) *People {
 }
 
 // GetPerson returns a person based on the id
-func (m *People) GetPerson(personID int) Person {
-	return m.idToPerson[personID]
+func (p *People) GetPerson(personID int) Person {
+	return p.idToPerson[personID]
 }
 
 // GetPersonIDByAlias returns the id of the person
-func (m *People) GetPersonIDByAlias(alias string) (int, error) {
-	for _, person := range m.idToPerson {
+func (p *People) GetPersonIDByAlias(alias string) (int, error) {
+	for _, person := range p.idToPerson {
 		if person.Alias == alias {
 			return person.ID, nil
 		}
@@ -38,9 +39,9 @@ func (m *People) GetPersonIDByAlias(alias string) (int, error) {
 }
 
 // GetActivePeople returns all the people who are actively available for matching
-func (m *People) GetActivePeople() []Person {
+func (p *People) GetActivePeople() []Person {
 	var activeUsers []Person
-	for _, person := range m.idToPerson {
+	for _, person := range p.idToPerson {
 		if person.Active {
 			activeUsers = append(activeUsers, person)
 		}
@@ -50,8 +51,8 @@ func (m *People) GetActivePeople() []Person {
 
 //SplitActivePeopleIntoTwoRandomGroups separates the opted in people into two groups randomly.
 //It is possible to have an odd person
-func (m *People) SplitActivePeopleIntoTwoRandomGroups() (group1 []Person, group2 []Person, oddPerson *Person) {
-	activePeople := m.GetActivePeople()
+func (p *People) SplitActivePeopleIntoTwoRandomGroups() (group1 []Person, group2 []Person, oddPerson *Person) {
+	activePeople := p.GetActivePeople()
 
 	rand.Shuffle(
 		len(activePeople),
@@ -71,11 +72,21 @@ func (m *People) SplitActivePeopleIntoTwoRandomGroups() (group1 []Person, group2
 }
 
 // GetAliases returns the aliases representing the ids in the order of the ids
-func (m *People) GetAliases(personIDs []int) []string {
+func (p *People) GetAliases(personIDs []int) []string {
 	var result []string
 	for _, personID := range personIDs {
-		person := m.idToPerson[personID]
+		person := p.idToPerson[personID]
 		result = append(result, person.Alias)
 	}
 	return result
+}
+
+//GetSortedIDs returns the list of personIDs sorted from lowest to highest
+func (p *People) GetSortedIDs() []int {
+	var personIDs []int
+	for personID := range p.idToPerson {
+		personIDs = append(personIDs, personID)
+	}
+	sort.Ints(personIDs)
+	return personIDs
 }

@@ -31,7 +31,7 @@ func NewStableMarriage(femalePrefs map[string][]string, malePrefs map[string][]s
 	return &newObj, nil
 }
 
-// CreateStablePairs provides a pairing between the two groups based on the preferences
+// CreateStablePairs provides a pairing between the two groups based on the preferences. Returns a map where key and value are aliases.
 func (algo *StableMarriage) CreateStablePairs() map[string]string {
 	/*Gale-Shapley Stable Marriage algorithm
 		https://en.wikipedia.org/wiki/Stable_marriage_problem

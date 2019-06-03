@@ -9,6 +9,7 @@ import (
 	"lunchbuddy/matching"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/pkg/errors"
@@ -49,8 +50,38 @@ func main() {
 		fmt.Println(fmt.Sprintf("Odd Person: %s", oddPerson.Alias))
 	}
 
-	matchesJSON, _ := json.MarshalIndent(matches, "", " ")
-	fmt.Println(string(matchesJSON))
+	if *verbose {
+		matchesJSON, _ := json.MarshalIndent(matches, "", " ")
+		fmt.Println(string(matchesJSON))
+	}
+
+	for group1Alias, group2Alias := range matches {
+		personID1, _ := peopleMatches.GetPersonIDByAlias(group1Alias)
+		personID2, _ := peopleMatches.GetPersonIDByAlias(group2Alias)
+		fmt.Print(peopleMatches.GetPerson(personID1).FullName + " and " + peopleMatches.GetPerson(personID2).FullName)
+		if peopleMatches.HaveBeenMatched(personID1, personID2) {
+			fmt.Print("=> Previously matched!!")
+		}
+		fmt.Println()
+	}
+
+	for _, personID := range peopleMatches.GetSortedIDs() {
+		personAlias := peopleMatches.GetPerson(personID).Alias
+		if matchedAlias, ok := matches[personAlias]; ok {
+			fmt.Println(matchedAlias)
+		} else {
+			foundPersonAlias := false
+			for keyAlias, valAlias := range matches {
+				if valAlias == personAlias {
+					fmt.Println(keyAlias)
+					foundPersonAlias = true
+				}
+			}
+			if !foundPersonAlias {
+				printErrorAndExit(errors.New("Can't find alias " + strconv.Itoa(personID) + personAlias))
+			}
+		}
+	}
 }
 
 func printErrorAndExit(err error) {
