@@ -12,23 +12,32 @@ func unmarshalPeopleMatches(data []byte) (PeopleMatches, error) {
 	return r, err
 }
 
-var globalOddPerson *Person
-
-func BenchmarkGetPreferences(b *testing.B) {
-
+func getPeopleMatches(b *testing.B) PeopleMatches {
 	peopleMatchesJSON, err := ioutil.ReadFile("testdata/peoplematches.json")
 
 	if err != nil {
-		println(err)
-		return
+		b.Error(err)
 	}
-
 	pm, _ := unmarshalPeopleMatches(peopleMatchesJSON)
-	var oddPerson *Person
-	for n := 0; n < b.N; n++ {
-		_, _, oddPerson = pm.GetPreferences()
-	}
+	return pm
+}
 
-	// Make sure the function call is not optimized out.
-	globalOddPerson = oddPerson
+func BenchmarkGetPreferences(b *testing.B) {
+
+	// Setup
+	pm := getPeopleMatches(b)
+
+	b.Run("normal", func(b *testing.B) {
+		b.ReportAllocs()
+		for n := 0; n < b.N; n++ {
+			pm.GetPreferences()
+		}
+	})
+
+	b.Run("goroutines", func(b *testing.B) {
+		b.ReportAllocs()
+		for n := 0; n < b.N; n++ {
+			pm.GetPreferencesParallel()
+		}
+	})
 }

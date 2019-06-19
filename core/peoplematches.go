@@ -2,6 +2,7 @@ package core
 
 import (
 	"sort"
+	"sync"
 )
 
 // PeopleMatches contains the people and past matches
@@ -20,31 +21,82 @@ func (pm *PeopleMatches) GetPreferences() (group1Prefs map[string][]string, grou
 	return
 }
 
+//GetPreferencesParallel splits the opted in people into two groups randomly and
+//returns their preferences of the other group using goroutines
+//If there is an odd number of people, an odd person may also be returned
+func (pm *PeopleMatches) GetPreferencesParallel() (group1Prefs map[string][]string, group2Prefs map[string][]string, oddPerson *Person) {
+	group1, group2, oddPerson := pm.SplitActivePeopleIntoTwoRandomGroups()
+
+	group1PrefsChannel := make(chan map[string][]string)
+	go pm.getPreferencesForFirstGroupParallel(group1, group2, group1PrefsChannel)
+
+	group2PrefsChannel := make(chan map[string][]string)
+	go pm.getPreferencesForFirstGroupParallel(group2, group1, group2PrefsChannel)
+
+	group1Prefs = <-group1PrefsChannel
+	group2Prefs = <-group2PrefsChannel
+
+	return
+}
+
 func (pm *PeopleMatches) getPreferencesForFirstGroup(group1 []Person, group2 []Person) map[string][]string {
 
+	// Key: Alias of the person
+	// Value: List of aliases in preference order for that person
 	group1Prefs := make(map[string][]string)
 
 	group2IDs := getPersonIDsFromPeople(group2)
 	group2IDsSet := NewSetFromInts(group2IDs)
 
 	for _, person := range group1 {
-		matches := pm.GetAllMatchesByPersonID(person.ID)
-		matchedPersonIds := getPersonIDsFromMatches(matches)
-
-		matchedPersonIdsInGroup2 := group2IDsSet.Intersect(NewSetFromInts(matchedPersonIds))
-		matchedPersonIdsInGroup2Sorted := pm.SortMatchesByDate(person.ID, matchedPersonIdsInGroup2.ToSlice())
-
-		nonMatchedInGroup2 := group2IDsSet.Difference(matchedPersonIdsInGroup2).ToSlice()
-		nonMatchedInGroup2Sorted := pm.sortInOrderOfPreference(person.ID, nonMatchedInGroup2)
-
-		prefPersonIds := []int{}
-		prefPersonIds = append(prefPersonIds, nonMatchedInGroup2Sorted...)
-		prefPersonIds = append(prefPersonIds, matchedPersonIdsInGroup2Sorted...)
-
-		group1Prefs[person.Alias] = pm.GetAliases(prefPersonIds)
+		group1Prefs[person.Alias] = pm.getPreferencesForPerson(person.ID, group2IDsSet)
 	}
 
 	return group1Prefs
+}
+
+func (pm *PeopleMatches) getPreferencesForFirstGroupParallel(group1 []Person, group2 []Person, group1PrefsChannel chan map[string][]string) {
+
+	// Key: Alias of the person
+	// Value: List of aliases in preference order for that person
+	group1Prefs := make(map[string][]string)
+
+	group2IDs := getPersonIDsFromPeople(group2)
+	group2IDsSet := NewSetFromInts(group2IDs)
+
+	group1Len := len(group1)
+
+	var wg sync.WaitGroup
+	wg.Add(group1Len)
+
+	for i := 0; i < group1Len; i++ {
+		go func(i int) {
+			defer wg.Done()
+			person := group1[i]
+			group1Prefs[person.Alias] = pm.getPreferencesForPerson(person.ID, group2IDsSet)
+		}(i)
+	}
+
+	wg.Wait()
+
+	group1PrefsChannel <- group1Prefs
+}
+
+func (pm *PeopleMatches) getPreferencesForPerson(personID int, inputPersonIDs *Set) []string {
+	matches := pm.GetAllMatchesByPersonID(personID)
+	matchedPersonIds := getPersonIDsFromMatches(matches)
+
+	matchedPersonIdsInInput := inputPersonIDs.Intersect(NewSetFromInts(matchedPersonIds))
+	matchedPersonIdsInInputSorted := pm.SortMatchesByDate(personID, matchedPersonIdsInInput.ToSlice())
+
+	nonMatchedInInput := inputPersonIDs.Difference(matchedPersonIdsInInput).ToSlice()
+	nonMatchedInInputSorted := pm.sortInOrderOfPreference(personID, nonMatchedInInput)
+
+	prefPersonIds := []int{}
+	prefPersonIds = append(prefPersonIds, nonMatchedInInputSorted...)
+	prefPersonIds = append(prefPersonIds, matchedPersonIdsInInputSorted...)
+
+	return pm.GetAliases(prefPersonIds)
 }
 
 func (pm *PeopleMatches) sortInOrderOfPreference(personID int, personIDsToSort []int) []int {
