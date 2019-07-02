@@ -7,9 +7,9 @@ import (
 )
 
 func unmarshalPeopleMatches(data []byte) (PeopleMatches, error) {
-	var r PeopleMatches
-	err := json.Unmarshal(data, &r)
-	return r, err
+	var pm PeopleMatches
+	err := json.Unmarshal(data, &pm)
+	return pm, err
 }
 
 func getPeopleMatches(b *testing.B) PeopleMatches {

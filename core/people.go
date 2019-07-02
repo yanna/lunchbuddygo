@@ -27,6 +27,16 @@ func (p *People) GetPerson(personID int) Person {
 	return p.idToPerson[personID]
 }
 
+//GetPersonByAlias returns a person based on an alias
+func (p *People) GetPersonByAlias(alias string) (Person, error) {
+	personID, err := p.GetPersonIDByAlias(alias)
+	if err != nil {
+		return Person{}, err
+	}
+
+	return p.GetPerson(personID), nil
+}
+
 // GetPersonIDByAlias returns the id of the person
 func (p *People) GetPersonIDByAlias(alias string) (int, error) {
 	for _, person := range p.idToPerson {
