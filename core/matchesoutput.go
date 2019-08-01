@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"math/rand"
 	"sort"
 )
 
@@ -20,11 +21,12 @@ func (a nameSorter) Less(i, j int) bool { return a[i].person1.FullName < a[j].pe
 // MatchesOutput is reponsible for printing all the match output
 type MatchesOutput struct {
 	*PeopleMatches
-	matches []PersonTuple
+	matches   []PersonTuple
+	oddPerson *Person
 }
 
 // NewMatchesOutput creats MatchesOutput
-func NewMatchesOutput(aliasMatches map[string]string, peopleMatches *PeopleMatches) *MatchesOutput {
+func NewMatchesOutput(aliasMatches map[string]string, peopleMatches *PeopleMatches, oddPerson *Person) *MatchesOutput {
 	var matches []PersonTuple
 	for group1Alias, group2Alias := range aliasMatches {
 		person1, _ := peopleMatches.GetPersonByAlias(group1Alias)
@@ -40,6 +42,7 @@ func NewMatchesOutput(aliasMatches map[string]string, peopleMatches *PeopleMatch
 	return &MatchesOutput{
 		matches:       matches,
 		PeopleMatches: peopleMatches,
+		oddPerson:     oddPerson,
 	}
 }
 
@@ -55,13 +58,44 @@ func (m *MatchesOutput) Print() {
 
 //PrintFullNames prints the full names of the matches
 func (m *MatchesOutput) printFullNames() {
-	for _, personTuple := range m.matches {
+
+	indexToMatchOddPerson := -1
+
+	if m.oddPerson != nil {
+		foundMatch := false
+		for i := 0; i < 1000; i++ {
+			indexToMatchOddPerson = rand.Intn(len(m.matches))
+			pairToJoin := m.matches[indexToMatchOddPerson]
+			if m.HaveBeenMatched(pairToJoin.person1.ID, m.oddPerson.ID) {
+				continue
+			}
+
+			if m.HaveBeenMatched(pairToJoin.person2.ID, m.oddPerson.ID) {
+				continue
+			}
+
+			foundMatch = true
+			break
+		}
+
+		if !foundMatch {
+			fmt.Errorf("Error: after many iterations still didn't find a match for the odd person!")
+		}
+	}
+
+	for i, personTuple := range m.matches {
 		p1 := personTuple.person1
 		p2 := personTuple.person2
 		fmt.Print(p1.FullName + " and " + p2.FullName)
+
 		if m.HaveBeenMatched(p1.ID, p2.ID) {
-			fmt.Print(" ********** Previously matched!! **********")
+			fmt.Print(" <--- Previously matched!! **********")
 		}
+
+		if indexToMatchOddPerson == i {
+			fmt.Print(" and " + m.oddPerson.FullName)
+		}
+
 		fmt.Println()
 	}
 }
@@ -70,6 +104,10 @@ func (m *MatchesOutput) printFullNames() {
 func (m *MatchesOutput) printExcelColumn() {
 	for _, personID := range m.GetSortedIDs() {
 		personToFindMatchFor := m.GetPerson(personID)
+		if !personToFindMatchFor.Active {
+			fmt.Println("n/a")
+			continue
+		}
 		if personMatch, err := m.getMatchedPerson(personToFindMatchFor); err == nil {
 			fmt.Println(personMatch.Alias)
 		} else {
@@ -88,6 +126,7 @@ func (m *MatchesOutput) printAliases() {
 }
 
 func (m *MatchesOutput) getMatchedPerson(personToFindMatchFor Person) (Person, error) {
+
 	for _, personTuple := range m.matches {
 		p1 := personTuple.person1
 		p2 := personTuple.person2

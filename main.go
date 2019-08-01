@@ -44,17 +44,12 @@ func main() {
 	printErrorAndExit(err)
 
 	matches := stableMarriage.CreateStablePairs()
-
-	if oddPerson != nil {
-		fmt.Println(fmt.Sprintf("Odd Person: %s", oddPerson.Alias))
-	}
-
 	if *verbose {
 		matchesJSON, _ := json.MarshalIndent(matches, "", " ")
 		fmt.Println(string(matchesJSON))
 	}
 
-	matchesOutput := core.NewMatchesOutput(matches, peopleMatches)
+	matchesOutput := core.NewMatchesOutput(matches, peopleMatches, oddPerson)
 	matchesOutput.Print()
 }
 
