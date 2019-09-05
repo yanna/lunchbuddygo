@@ -50,10 +50,10 @@ func NewMatchesOutput(aliasMatches map[string]string, peopleMatches *PeopleMatch
 func (m *MatchesOutput) Print() {
 	fmt.Println()
 	m.printFullNames()
-	fmt.Println()
-	m.printExcelColumn()
-	fmt.Println()
+	fmt.Println("\nAliases: ")
 	m.printAliases()
+	fmt.Println("\nExcel column: ")
+	m.printExcelColumn()
 }
 
 //PrintFullNames prints the full names of the matches
@@ -79,7 +79,7 @@ func (m *MatchesOutput) printFullNames() {
 		}
 
 		if !foundMatch {
-			fmt.Errorf("Error: after many iterations still didn't find a match for the odd person!")
+			fmt.Print("Error: after many iterations still didn't find a match for the odd person")
 		}
 	}
 
@@ -104,10 +104,14 @@ func (m *MatchesOutput) printFullNames() {
 func (m *MatchesOutput) printExcelColumn() {
 	for _, personID := range m.GetSortedIDs() {
 		personToFindMatchFor := m.GetPerson(personID)
+		//fmt.Print(personID)
+		//fmt.Print(personToFindMatchFor.FullName + "\t")
+
 		if !personToFindMatchFor.Active {
-			fmt.Println("n/a")
+			fmt.Println("---") //Just printing "" caused some rows to be missing?! I don't really understand.
 			continue
 		}
+
 		if personMatch, err := m.getMatchedPerson(personToFindMatchFor); err == nil {
 			fmt.Println(personMatch.Alias)
 		} else {
