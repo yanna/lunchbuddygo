@@ -29,27 +29,23 @@ func NewPerson(personID int, fullName string, alias string, team string, discipl
 
 // GetScore returns the score of the current person with relation to the input person
 func (p *Person) GetScore(personScoreIsFor *Person) int {
-	// Most important differences
-	// 1. Seniority (we don't want Senior leadership ppl to be grouped together)
-	// 2. Gender
-	// 3. Team
-	// 4. Discipline
 	// Higher score is better
+	// TODO: support multiple teams
 	score := 0
 
 	if personScoreIsFor.Seniority != p.Seniority {
 		score += 10
 	}
 
-	if personScoreIsFor.Gender != p.Gender {
+	if personScoreIsFor.Team != p.Team {
 		score += 8
 	}
 
-	if personScoreIsFor.Team != p.Team {
-		score += 4
+	if personScoreIsFor.Discipline != p.Discipline {
+		score += 6
 	}
 
-	if personScoreIsFor.Discipline != p.Discipline {
+	if personScoreIsFor.Gender != p.Gender {
 		score += 4
 	}
 
