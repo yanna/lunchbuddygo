@@ -1,5 +1,7 @@
 package core
 
+import "strings"
+
 // Person - Information about a person
 type Person struct {
 	ID         int    `json:"id"`
@@ -40,14 +42,12 @@ func (p *Person) GetScore(personScoreIsFor *Person, matchMode MatchMode) int {
 // GetScore returns the score of the current person with relation to the input person
 // that will yield a higher score for more differences
 func (p *Person) GetScoreForMostDifferentMatch(personScoreIsFor *Person) int {
-	// TODO: support multiple teams
-
 	score := 0
 	if personScoreIsFor.Seniority != p.Seniority {
 		score += 10
 	}
 
-	if personScoreIsFor.Team != p.Team {
+	if !isInSameTeam(personScoreIsFor.Team, p.Team) {
 		score += 8
 	}
 
@@ -65,15 +65,14 @@ func (p *Person) GetScoreForMostDifferentMatch(personScoreIsFor *Person) int {
 // GetScore returns the score of the current person with relation to the input person
 // that will yield a higher score for more similarities
 func (p *Person) GetScoreForMostSimilarMatch(personScoreIsFor *Person) int {
-	// TODO: support multiple teams
 
 	score := 0
-	if personScoreIsFor.Team == p.Team {
+	if isInSameTeam(personScoreIsFor.Team, p.Team) {
 		score += 16
 	}
 
 	if personScoreIsFor.Discipline == p.Discipline {
-		score += 8
+		score += 10
 	}
 
 	if personScoreIsFor.Gender == p.Gender {
@@ -85,4 +84,20 @@ func (p *Person) GetScoreForMostSimilarMatch(personScoreIsFor *Person) int {
 	}
 
 	return score
+}
+
+func isInSameTeam(teams1 string, teams2 string) bool {
+	// teams is a delimited by " "
+	teams1Split := strings.Fields(teams1)
+	teams2Split := strings.Fields(teams2)
+
+	for _, team1 := range teams1Split {
+		for _, team2 := range teams2Split {
+			if team1 == team2 {
+				return true
+			}
+		}
+	}
+
+	return false
 }
