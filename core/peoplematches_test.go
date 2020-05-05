@@ -30,14 +30,14 @@ func BenchmarkGetPreferences(b *testing.B) {
 	b.Run("normal", func(b *testing.B) {
 		b.ReportAllocs()
 		for n := 0; n < b.N; n++ {
-			pm.GetPreferences()
+			pm.GetPreferences(Different)
 		}
 	})
 
 	b.Run("goroutines", func(b *testing.B) {
 		b.ReportAllocs()
 		for n := 0; n < b.N; n++ {
-			pm.GetPreferencesParallel()
+			pm.GetPreferencesParallel(Different)
 		}
 	})
 }

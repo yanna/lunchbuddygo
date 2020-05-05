@@ -8,6 +8,13 @@ type Match struct {
 	PersonID int    `json:"id"`
 }
 
+type MatchMode int
+
+const (
+	Different MatchMode = iota
+	Similar
+)
+
 // NewMatch constructs a Match
 func NewMatch(date string, alias string, personID int) *Match {
 	return &Match{

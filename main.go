@@ -19,10 +19,23 @@ func main() {
 
 	buddyCsvFilePath := flag.String("csv", "", "Location of the Lunch Buddy csv file")
 	verbose := flag.Bool("verbose", false, "Lots of logging")
+	matchModeFlag := flag.String("mode", "", "Different/Similar to indicate the type of match we want")
 	flag.Parse()
 
 	if *buddyCsvFilePath == "" {
 		log.Fatalln("csv flag is required.")
+	}
+
+	matchMode := core.Different
+	switch *matchModeFlag {
+	case "":
+		log.Fatalln("mode flag is required.")
+	case "Similar":
+		matchMode = core.Similar
+	case "Different":
+		matchMode = core.Different
+	default:
+		log.Fatalln("mode flag only expects Similar or Different.")
 	}
 
 	rand.Seed(time.Now().UnixNano())
@@ -34,7 +47,7 @@ func main() {
 		print("People matches:", *peopleMatches)
 	}
 
-	group1, group2, oddPerson := peopleMatches.GetPreferences()
+	group1, group2, oddPerson := peopleMatches.GetPreferences(matchMode)
 	if *verbose {
 		print("Group1:", group1)
 		print("Group2:", group2)

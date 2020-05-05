@@ -28,11 +28,21 @@ func NewPerson(personID int, fullName string, alias string, team string, discipl
 }
 
 // GetScore returns the score of the current person with relation to the input person
-func (p *Person) GetScore(personScoreIsFor *Person) int {
-	// Higher score is better
-	// TODO: support multiple teams
-	score := 0
+func (p *Person) GetScore(personScoreIsFor *Person, matchMode MatchMode) int {
+	if matchMode == Similar {
+		return p.GetScoreForMostSimilarMatch(personScoreIsFor)
+	}
 
+	return p.GetScoreForMostDifferentMatch(personScoreIsFor)
+
+}
+
+// GetScore returns the score of the current person with relation to the input person
+// that will yield a higher score for more differences
+func (p *Person) GetScoreForMostDifferentMatch(personScoreIsFor *Person) int {
+	// TODO: support multiple teams
+
+	score := 0
 	if personScoreIsFor.Seniority != p.Seniority {
 		score += 10
 	}
@@ -47,6 +57,31 @@ func (p *Person) GetScore(personScoreIsFor *Person) int {
 
 	if personScoreIsFor.Gender != p.Gender {
 		score += 4
+	}
+
+	return score
+}
+
+// GetScore returns the score of the current person with relation to the input person
+// that will yield a higher score for more similarities
+func (p *Person) GetScoreForMostSimilarMatch(personScoreIsFor *Person) int {
+	// TODO: support multiple teams
+
+	score := 0
+	if personScoreIsFor.Team == p.Team {
+		score += 16
+	}
+
+	if personScoreIsFor.Discipline == p.Discipline {
+		score += 8
+	}
+
+	if personScoreIsFor.Gender == p.Gender {
+		score += 4
+	}
+
+	if personScoreIsFor.Seniority == p.Seniority {
+		score += 2
 	}
 
 	return score
