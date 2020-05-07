@@ -112,7 +112,7 @@ func createCsvPerson(line []string, headers []string) (person, error) {
 	matchValues := line[MatchesStartingIndex:]
 	for i, matchValue := range matchValues {
 
-		if matchValue == "" {
+		if matchValue == "" || matchValue == "---" {
 			continue
 		}
 
