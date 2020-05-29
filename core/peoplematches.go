@@ -84,10 +84,7 @@ func (pm *PeopleMatches) getPreferencesForFirstGroupParallel(group1 []Person, gr
 
 func (pm *PeopleMatches) getPreferencesForPerson(personID int, inputPersonIDs *Set, matchMode MatchMode) []string {
 	matches := pm.GetAllMatchesByPersonID(personID)
-	matchedPersonIds := []int{}
-	if matchMode == Different {
-		matchedPersonIds = getPersonIDsFromMatches(matches)
-	}
+	matchedPersonIds := getPersonIDsFromMatches(matches)
 
 	matchedPersonIdsInInput := inputPersonIDs.Intersect(NewSetFromInts(matchedPersonIds))
 	matchedPersonIdsInInputSorted := pm.SortMatchesByDate(personID, matchedPersonIdsInInput.ToSlice())

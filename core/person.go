@@ -83,6 +83,12 @@ func (p *Person) GetScoreForMostSimilarMatch(personScoreIsFor *Person) int {
 		score += 2
 	}
 
+	// Hack. Don't want the interns to be together to give them
+	// exposure to the team during their 4 weeks here.
+	if (personScoreIsFor.Seniority == "intern" && p.Seniority == "intern") {
+		score -= 4
+	}
+
 	return score
 }
 
