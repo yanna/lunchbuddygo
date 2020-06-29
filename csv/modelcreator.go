@@ -24,7 +24,8 @@ func createPerson(csvPerson *person) *core.Person {
 		csvPerson.Discipline,
 		csvPerson.Seniority,
 		csvPerson.Gender,
-		csvPerson.Active)
+		csvPerson.Active, 
+		csvPerson.LowPref)
 	return output
 }
 

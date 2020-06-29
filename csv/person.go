@@ -9,5 +9,6 @@ type person struct {
 	Seniority   string  `json:"seniority"`
 	Gender      string  `json:"gender"`
 	Active      bool    `json:"active"`
+	LowPref     string  `json:"lowpref"`
 	PastMatches []match `json:"past_matches"`
 }

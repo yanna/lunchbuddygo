@@ -12,10 +12,11 @@ type Person struct {
 	Seniority  string `json:"seniority"`
 	Gender     string `json:"gender"`
 	Active     bool   `json:"active"`
+	LowPref    string `json:"lowpref"`
 }
 
 // NewPerson constructs a Person
-func NewPerson(personID int, fullName string, alias string, team string, discipline string, seniority string, gender string, active bool) *Person {
+func NewPerson(personID int, fullName string, alias string, team string, discipline string, seniority string, gender string, active bool, lowPref string) *Person {
 
 	return &Person{
 		ID:         personID,
@@ -26,6 +27,7 @@ func NewPerson(personID int, fullName string, alias string, team string, discipl
 		Seniority:  seniority,
 		Gender:     gender,
 		Active:     active,
+		LowPref:    lowPref,
 	}
 }
 
@@ -67,27 +69,25 @@ func (p *Person) GetScoreForMostDifferentMatch(personScoreIsFor *Person) int {
 func (p *Person) GetScoreForMostSimilarMatch(personScoreIsFor *Person) int {
 
 	score := 0
+	if (p.LowPref == personScoreIsFor.Alias) {
+			return -1000;
+	}
 	if isInSameTeam(personScoreIsFor.Team, p.Team) {
 		score += 16
 	}
-
-	if personScoreIsFor.Discipline == p.Discipline {
+	
+	if personScoreIsFor.Seniority != p.Seniority {
 		score += 10
 	}
 
-	if personScoreIsFor.Gender == p.Gender {
-		score += 4
+	if personScoreIsFor.Discipline == p.Discipline {
+		score += 6
 	}
 
-	if personScoreIsFor.Seniority == p.Seniority {
+	if personScoreIsFor.Gender == p.Gender {
 		score += 2
 	}
 
-	// Hack. Don't want the interns to be together to give them
-	// exposure to the team during their 4 weeks here.
-	if (personScoreIsFor.Seniority == "intern" && p.Seniority == "intern") {
-		score -= 4
-	}
 
 	return score
 }

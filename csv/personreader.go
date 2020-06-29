@@ -95,7 +95,7 @@ func createCsvPerson(line []string, headers []string) (person, error) {
 	}
 	// Expectation is that we have these fixed headers, then the rest will be columns of matches
 	// The header has the date in the format yyyymm and the cell value is the alias
-	const MatchesStartingIndex = 8
+	const MatchesStartingIndex = 9
 	person := person{
 		ID:         personID,
 		FullName:   line[1],
@@ -105,6 +105,7 @@ func createCsvPerson(line []string, headers []string) (person, error) {
 		Seniority:  line[5],
 		Gender:     line[6],
 		Active:     isActive,
+		LowPref:     line[8],
 	}
 
 	matches := []match{}
