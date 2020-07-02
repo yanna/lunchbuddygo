@@ -73,15 +73,15 @@ func (p *Person) GetScoreForMostSimilarMatch(personScoreIsFor *Person) int {
 			return -1000;
 	}
 	if isInSameTeam(personScoreIsFor.Team, p.Team) {
-		score += 16
+		score += 12
 	}
 	
 	if personScoreIsFor.Seniority != p.Seniority {
-		score += 10
+		score += 5
 	}
 
 	if personScoreIsFor.Discipline == p.Discipline {
-		score += 6
+		score += 4
 	}
 
 	if personScoreIsFor.Gender == p.Gender {
